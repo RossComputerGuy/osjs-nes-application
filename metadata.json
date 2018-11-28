@@ -1,0 +1,19 @@
+{
+  "type": "application",
+  "name": "NES",
+  "category": "games",
+  "server": "server.js",
+  "title": {
+    "en_EN": "NES Emulator"
+  },
+  "description": {
+    "en_EN": "NES Emulator"
+  },
+  "mimes": [
+	"/application\/octet-stream/"
+  ],
+  "files": [
+    "main.js",
+    "main.css"
+  ]
+}
