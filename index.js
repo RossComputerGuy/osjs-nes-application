@@ -48,9 +48,8 @@ const register = (core,args,options,metadata) => {
 	.on("keyup",ev => nes.handleKeyUp(ev))
 	.on("drop",(ev,data) => {
     	if(data.isFile && data.mime) {
-			if(/application\/octet-stream/.test(data.mime)) {
-				loadFile(data);
-			}
+			const found = metadata.mimes.find(m => (new RegExp(m)).test(data.mime));
+			if(found) loadFile(data);
 		}
 	})
 	.on("blur",() => nes.stop())
@@ -69,7 +68,7 @@ const register = (core,args,options,metadata) => {
 					position: ev.target,
 					menu: [
 						{ label: "Open", onclick: () => {
-							core.make("osjs/dialog","file",{ type: "open", mime: [ /application\/octet-stream/ ] },(btn,item) => {
+							core.make("osjs/dialog","file",{ type: "open", mime: metadata.mimes },(btn,item) => {
 								if(btn == "ok") loadFile(item);
 							});
 						} },
@@ -102,6 +101,7 @@ const register = (core,args,options,metadata) => {
 			]),
 			h("div",{ oncreate: el => el.appendChild(canvas) })
 		]),$content);
+		if(proc.args.file) loadFile(proc.args.file);
 	});
 	return proc;
 };

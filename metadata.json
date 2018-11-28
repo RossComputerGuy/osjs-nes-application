@@ -10,7 +10,7 @@
     "en_EN": "NES Emulator"
   },
   "mimes": [
-	"/application\/octet-stream/"
+	"application\/octet-stream"
   ],
   "files": [
     "main.js",
