@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@osjs/gui": "^4.0.8",
+    "copy-webpack-plugin": "^4.6.0",
     "hyperapp": "^1.2.9",
     "jsnes": "^1.0.1",
     "nes-js": "0.0.1"

@@ -31,6 +31,7 @@ const register = (core,args,options,metadata) => {
 	proc.createWindow({
 		id: "NESWindow",
 		title: metadata.title.en_EN+" (0 FPS)",
+		icon: proc.resource(metadata.icon),
 		dimension: { width: 256, height: 300 },
 		position: { left: 700, top: 200 },
 		attributes: { minDimension: { width: 256, height: 300 } }

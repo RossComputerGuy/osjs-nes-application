@@ -3,6 +3,7 @@
   "name": "NES",
   "category": "games",
   "server": "server.js",
+  "icon": "icon.png",
   "title": {
     "en_EN": "NES Emulator"
   },
