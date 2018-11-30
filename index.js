@@ -13,7 +13,9 @@ import {
 require("nes-js");
 
 const register = (core,args,options,metadata) => {
-	const proc = core.make('osjs/application',{args,options,metadata});
+	const proc = core.make("osjs/application",{args,options,metadata});
+	const {translatable} = core.make("osjs/locale");
+	const _ = translatable(require("./locales.js"));
 	var canvas = document.createElement("canvas");
 	var nes = new NesJs.Nes();
 	nes.setDisplay(new NesJs.Display(canvas));
@@ -30,7 +32,7 @@ const register = (core,args,options,metadata) => {
 	};
 	proc.createWindow({
 		id: "NESWindow",
-		title: metadata.title.en_EN+" (0 FPS)",
+		title: _("WIN_TITLE",0),
 		icon: proc.resource(metadata.icon),
 		dimension: { width: 256, height: 300 },
 		position: { left: 700, top: 200 },
@@ -57,7 +59,7 @@ const register = (core,args,options,metadata) => {
 	.on("focus",() => nes.resume())
     .render(($content,win) => {
 		nes.addEventListener("fps",fps => {
-			win.setTitle("NES Emulator ("+fps.toString().substring(0,5)+" FPS)");
+			win.setTitle(_("WIN_TITLE",fps.toString().substring(0,5)));
 		});
 		canvas.onresize = () => {
 			win.setDimension({ width: canvas.width, height: canvas.height });
@@ -68,37 +70,32 @@ const register = (core,args,options,metadata) => {
 				core.make("osjs/contextmenu").show({
 					position: ev.target,
 					menu: [
-						{ label: "Open", onclick: () => {
+						{ label: _("FILE_OPEN"), onclick: () => {
 							core.make("osjs/dialog","file",{ type: "open", mime: metadata.mimes },(btn,item) => {
 								if(btn == "ok") loadFile(item);
 							});
 						} },
-						{ label: "Quit", onclick: () => proc.destroy() }
+						{ label: _("FILE_QUIT"), onclick: () => proc.destroy() }
 					]
 				});
 			},
 			menuEmulation: ev => (state,actions) => {
-				var menu = [];
-				if(nes.state == nes.STATES.RUN || nes.state == nes.STATES.STOP) {
-					menu.push({ label: "Reset", onclick: () => nes.reset() });
-					menu.push({ label: "Step", onclick: () => nes.runStep() });
-					menu.push({ label: "Cycle", onclick: () => nes.runCycle() });
-					if(nes.state == nes.STATES.RUN) menu.push({ label: "Stop", onclick: () => nes.stop() });
-					if(nes.state == nes.STATES.STOP) menu.push({ label: "Resume", onclick: () => nes.resume() });
-				}
-				if(nes.audioEnabled) menu.push({ label: "Disable Audio", onclick: () => { nes.audioEnabled = false; } });
-				else menu.push({ label: "Enable Audio", onclick: () => { nes.audioEnabled = true; } });
-				// TODO: add dumping
-				if(menu.length == 0) return;
 				core.make("osjs/contextmenu").show({
 					position: ev.target,
-					menu: menu
+					menu: [
+						{ disable: nes.state != nes.STATES.RUN && nes.state != nes.STATES.STOP, label: _("EMULATION_RESET"), onclick: () => nes.reset() },
+						{ disable: nes.state != nes.STATES.RUN && nes.state != nes.STATES.STOP, label: _("EMULATION_STEP"), onclick: () => nes.runStep() },
+						{ disable: nes.state != nes.STATES.RUN && nes.state != nes.STATES.STOP, label: _("EMULATION_CYCLE"), onclick: () => nes.runCycle() },
+						{ disable: nes.state != nes.STATES.RUN, label: _("EMULATION_STOP"), onclick: () => nes.stop() },
+						{ disable: nes.state != nes.STATES.STOP, label: _("EMULATION_RESUME"), onclick: () => nes.resume() },
+						{ label: nes.audioEnabled ? _("EMULATION_AUDIO_DISABLE") : _("EMULATION_AUDIO_ENABLE"), onclick: () => { nes.audioEnabled = !nes.audioEnabled; } }
+					].filter(e => !!e)
 				});
 			}
 		},(state,actions) => h(Box,{ grow: 1, padding: false },[
 			h(Menubar,{},[
-				h(MenubarItem,{ onclick: ev => actions.menuFile(ev) },"File"),
-				h(MenubarItem,{ onclick: ev => actions.menuEmulation(ev) },"Emulation")
+				h(MenubarItem,{ onclick: ev => actions.menuFile(ev) },_("MENU_FILE")),
+				h(MenubarItem,{ onclick: ev => actions.menuEmulation(ev) },_("MENU_EMULATION"))
 			]),
 			h("div",{ oncreate: el => el.appendChild(canvas) })
 		]),$content);
