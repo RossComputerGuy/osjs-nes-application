@@ -16,4 +16,4 @@ const en_US = {
 	EMULATION_AUDIO_ENABLE: "Enable Audio"
 };
 
-module.exports = {en_US};
+module.exports = {en_US, en_EN: en_US };
